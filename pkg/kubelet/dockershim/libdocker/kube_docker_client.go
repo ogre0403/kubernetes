@@ -141,11 +141,7 @@ func (d *kubeDockerClient) InspectContainerWithSize(id string) (*dockertypes.Con
 func (d *kubeDockerClient) CreateContainer(opts dockertypes.ContainerCreateConfig) (*dockercontainer.ContainerCreateCreatedBody, error) {
 	ctx, cancel := d.getTimeoutContext()
 	defer cancel()
-	// we provide an explicit default shm size as to not depend on docker daemon.
-	// TODO: evaluate exposing this as a knob in the API
-	if opts.HostConfig != nil && opts.HostConfig.ShmSize <= 0 {
-		opts.HostConfig.ShmSize = defaultShmSize
-	}
+	
 	createResp, err := d.client.ContainerCreate(ctx, opts.Config, opts.HostConfig, opts.NetworkingConfig, opts.Name)
 	if ctxErr := contextError(ctx); ctxErr != nil {
 		return nil, ctxErr
